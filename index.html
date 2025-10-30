@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班级积分乐园 🌱</title>
+    <style>
+        /* 通用样式 */
+        body {
+            font-family: "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            transition: background-color 0.4s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* 头部样式 */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #4CAF50;
+            font-weight: 300;
+        }
+
+        /* 控制栏样式 */
+        .control-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-bar input,
+        .control-bar select,
+        .control-bar button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .control-bar button {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .control-bar button:hover {
+            background-color: #45a049;
+        }
+
+        /* 列表样式 */
+        .student-list,
+        .group-list {
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-list .student-item,
+        .group-list .group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 5px 0;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .student-list .student-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .student-list .student-header input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        .student-list .student-item:hover,
+        .group-list .group-item:hover {
+            background-color: #e0f2f1;
+        }
+
+        /* 表格样式 */
+        .ranking-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .ranking-table th,
+        .ranking-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .ranking-table th {
+            background-color: #4CAF50;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        /* 搜索样式 */
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-bar input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 300px;
+        }
+
+        .search-bar button {
+            padding: 10px 20px;
+            background-color: #2196F3;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-bar button:hover {
+            background-color: #1976D2;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .modal-content button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .control-bar {
+                flex-direction: column;
+            }
+
+            .control-bar input,
+            .control-bar select,
+            .control-bar button {
+                margin: 5px 0;
+                width: 100%;
+            }
+
+            .ranking-table th,
+            .ranking-table td {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+
+        /* 自定义按钮样式 */
+        .score-button {
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .score-button.add {
+            background-color: #4CAF50;
+        }
+
+        .score-button.add:hover {
+            background-color: #45a049;
+        }
+
+        .score-button.subtract {
+            background-color: #f44336;
+        }
+
+        .score-button.subtract:hover {
+            background-color: #e53935;
+        }
+
+        .edit-button {
+            background-color: #2196F3;
+        }
+
+        .edit-button:hover {
+            background-color: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>班级积分乐园 🌱</h1>
+    </header>
+    <div class="container">
+        <!-- 控制栏 -->
+        <div class="control-bar">
+            <!-- 班级选择 -->
+            <div>
+                <label for="classSelect">选择班级:</label>
+                <select id="classSelect" onchange="switchClass()">
+                    <option value="">请选择班级</option>
+                </select>
+                <button onclick="openAddClassModal()">添加班级</button>
+                <button onclick="deleteClass()">删除班级</button>
+                <button onclick="openEditClassModal()">编辑班级</button>
+            </div>
+
+            <!-- 批量导入部分 -->
+            <div>
+                <h3>批量导入学生名单</h3>
+                <textarea class="import-textarea" id="importInput" placeholder="🎉 批量导入学生（每行格式：组别,学号,姓名）"></textarea>
+                <button onclick="importStudents()">🚀 导入</button>
+            </div>
+
+            <!-- 其他操作 -->
+            <div>
+                <select id="groupFilter" onchange="filterStudents()">
+                    <option value="">🎉 所有组别</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="🔍 搜索学生（姓名、学号等）" oninput="searchStudent()">
+                <button onclick="searchStudent()">🔍</button>
+            </div>
+        </div>
+
+        <!-- 学生列表 -->
+        <div class="student-list" id="studentList">
+            <!-- 全选按钮 -->
+            <div class="student-header">
+                <input type="checkbox" id="selectAll" onchange="handleSelectAll()">
+                <label for="selectAll">全选/全不选</label>
+                <button onclick="batchDelete()">🗑️ 批量删除</button>
+            </div>
+            <!-- 学生信息动态加载 -->
+        </div>
+
+        <!-- 小组列表 -->
+        <div class="group-list" id="groupList">
+            <!-- 小组信息动态加载 -->
+        </div>
+
+        <!-- 排行榜区域 -->
+        <div class="ranking-container">
+            <button onclick="showPersonalRanking()">🌟 个人排行榜</button>
+            <button onclick="showGroupRanking()">🌟 小组排行榜</button>
+            <button onclick="exportRanking()">📄 导出排行榜</button>
+            <table class="ranking-table" id="rankingTable">
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>姓名/组别</th>
+                        <th>积 分</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 添加班级模态框 -->
+    <div id="addClassModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddClassModal()">&times;</span>
+            <h2>添加新班级 ✨</h2>
+            <input type="text" id="newClassName" placeholder="请输入班级名称">
+            <button type="button" onclick="addClass()">✨ 添加班级</button>
+        </div>
+    </div>
+
+    <!-- 编辑班级模态框 -->
+    <div id="editClassModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditClassModal()">&times;</span>
+            <h2>编辑班级名称 ✨</h2>
+            <input type="text" id="editClassName" placeholder="请输入新的班级名称">
+            <button type="button" onclick="saveClassEdit()">✨ 保存</button>
+        </div>
+    </div>
+
+    <!-- 脚注 -->
+    <footer>
+        <p>🌱 版权所有</p>
+    </footer>
+
+    <script>
+        // 数据存储
+        let classData = {}; // 按班级存储数据
+        let currentClass = ''; // 当前选择的班级
+
+        // 初始化页面
+        function init() {
+            const savedData = JSON.parse(localStorage.getItem('classData'));
+            classData = savedData ? savedData : {};
+            updateClassSelect();
+            switchClass(); // 初始化时使用第一个班级
+        }
+
+        // 更新班级选择下拉框
+        function updateClassSelect() {
+            const classSelect = document.getElementById('classSelect');
+            classSelect.innerHTML = '<option value="">请选择班级</option>';
+            for (const className in classData) {
+                const option = document.createElement('option');
+                option.value = className;
+                option.textContent = className;
+                classSelect.appendChild(option);
+            }
+        }
+
+        // 切换班级
+        function switchClass() {
+            const classSelect = document.getElementById('classSelect');
+            currentClass = classSelect.value;
+
+            if (!currentClass) return;
+
+            updateStudents();
+            updateGroups();
+            updateFilters();
+        }
+
+        // 添加班级
+        function openAddClassModal() {
+            document.getElementById('addClassModal').style.display = 'flex';
+        }
+
+        function closeAddClassModal() {
+            document.getElementById('addClassModal').style.display = 'none';
+        }
+
+        function addClass() {
+            const newClassName = document.getElementById('newClassName').value.trim();
+            if (newClassName && !classData[newClassName]) {
+                classData[newClassName] = { students: [] }; // 创建新班级并初始化学生数据
+                saveClassData();
+                updateClassSelect();
+                closeAddClassModal();
+                alert('班级添加成功');
+            } else {
+                alert('班级名称不能为空或已存在');
+            }
+        }
+
+        // 删除班级
+        function deleteClass() {
+            if (!currentClass) {
+                alert('请选择要删除的班级');
+                return;
+            }
+
+            const confirmation = confirm(`确认删除班级 "${currentClass}" 及其所有数据吗？`);
+            if (confirmation) {
+                delete classData[currentClass];
+                if (currentClass === '' && Object.keys(classData).length > 0) {
+                    currentClass = Object.keys(classData)[0]; // 将当前班级切换为第一个班级
+                }
+                saveClassData();
+                updateClassSelect();
+                alert('班级已删除');
+                updateStudents();
+                updateGroups();
+            }
+        }
+
+        // 打开编辑班级模态框
+        function openEditClassModal() {
+            if (!currentClass) {
+                alert('请选择要编辑的班级');
+                return;
+            }
+
+            document.getElementById('editClassName').value = currentClass;
+            document.getElementById('editClassModal').style.display = 'flex';
+        }
+
+        function closeEditClassModal() {
+            document.getElementById('editClassModal').style.display = 'none';
+        }
+
+        function saveClassEdit() {
+            const newClassName = document.getElementById('editClassName').value.trim();
+            if (newClassName && !classData[newClassName]) {
+                classData[newClassName] = classData[currentClass]; // 移动学生数据到新班级
+                delete classData[currentClass]; // 删除旧班级
+                currentClass = newClassName; // 更新当前班级
+                saveClassData();
+                updateClassSelect();
+                closeEditClassModal();
+                alert('班级名称已更新');
+                switchClass();
+            } else {
+                alert('班级名称不能为空或已存在');
+            }
+        }
+
+        // 更新小组列表
+        function updateGroups() {
+            const groups = getCurrentGroups();
+            const groupList = document.getElementById('groupList');
+            groupList.innerHTML = groups.map(group => `
+                <div class="group-item">
+                    <span>${group.name}（总分：${group.totalScore}）</span>
+                    <button onclick="deleteGroup('${group.id}')">🗑️ 删除</button>
+                </div>
+            `).join('');
+        }
+
+        // 获取当前班级的学生
+        function getCurrentStudents() {
+            return classData[currentClass]?.students || [];
+        }
+
+        // 获取当前班级的小组
+        function getCurrentGroups() {
+            const students = getCurrentStudents();
+            return students.reduce((acc, student) => {
+                const group = student.group || '未分组';
+                const groupEntry = acc.find(g => g.id === group);
+                if (groupEntry) {
+                    groupEntry.totalScore += student.score || 0;
+                } else {
+                    acc.push({
+                        id: group,
+                        name: group === '未分组' ? '未分组' : `小组 ${group}`,
+                        totalScore: (student.score || 0)
+                    });
+                }
+                return acc;
+            }, []);
+        }
+
+        // 更新学生列表
+        function updateStudents(filter = '') {
+            const students = getCurrentStudents();
+            const filteredStudents = filter ? students.filter(student => 
+                student.name.includes(filter) || student.id.includes(filter)
+            ) : students;
+
+            const studentList = document.getElementById('studentList');
+            studentList.innerHTML = `
+                <div class="student-header">
+                    <input type="checkbox" id="selectAll" onchange="handleSelectAll()">
+                    <label for="selectAll">全选/全不选</label>
+                    <button onclick="batchDelete()">🗑️ 批量删除</button>
+                </div>
+                ${filteredStudents.map(student => `
+                    <div class="student-item">
+                        <input type="checkbox" class="select-student" data-student-id="${student.id}">
+                        <span>ID: ${student.id}</span>
+                        <span>姓名: ${student.name}</span>
+                        <span>组别: ${student.group}</span>
+                        <input type="number" value="${student.score || 0}" onchange="editScore('${student.id}', this.value)" style="width: 60px; margin-left: 10px;">
+                        <button class="score-button add" onclick="changeScore('${student.id}', 1)">➕</button>
+                        <button class="score-button subtract" onclick="changeScore('${student.id}', -1)">➖</button>
+                        <button onclick="deleteStudent('${student.id}')">🗑️ 删除</button>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // 批量导入学生信息
+        function importStudents() {
+            const importInput = document.getElementById('importInput').value.trim();
+            if (!importInput) {
+                alert('请输入批量导入的学生名单');
+                return;
+            }
+
+            const lines = importInput.split('\n');
+            const newStudents = lines.map(line => {
+                const [group, id, name] = line.split(',');
+                return {
+                    id: id.trim(),
+                    name: name.trim(),
+                    group: group ? group.trim() : '未分组',
+                    score: 0
+                };
+            }).filter(student => student.id && student.name);
+
+            if (newStudents.length === 0) {
+                alert('未检测到有效数据，请检查格式');
+                return;
+            }
+
+            const students = getCurrentStudents();
+            classData[currentClass] = { students: [...students, ...newStudents] };
+            saveClassData();
+            alert('🎉 学生名单导入成功');
+            updateStudents();
+            updateGroups();
+            updateFilters();
+        }
+
+        // 更新小组筛选器
+        function updateFilters() {
+            const groupFilter = document.getElementById('groupFilter');
+            groupFilter.innerHTML = '<option value="">🎉 所有组别</option>';
+
+            const uniqueGroups = [...new Set(getCurrentStudents().map(student => student.group))];
+            uniqueGroups.forEach(group => {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group === '未分组' ? '未分组' : `小组 ${group}`;
+                groupFilter.appendChild(option);
+            });
+        }
+
+        // 过滤学生
+        function filterStudents() {
+            const filter = document.getElementById('groupFilter').value;
+            updateStudents(filter);
+        }
+
+        // 搜索学生
+        function searchStudent() {
+            const searchValue = document.getElementById('searchInput').value.trim();
+            updateStudents(searchValue);
+        }
+
+        // 改变积分，简化逻辑去掉确认弹框
+        function changeScore(studentId, change) {
+            const students = getCurrentStudents();
+            const student = students.find(s => s.id === studentId);
+            if (student) {
+                student.score += change;
+                saveClassData();
+                updateStudents();
+                updateGroups();
+                updateFilters();
+            }
+        }
+
+        // 编辑分数
+        function editScore(studentId, newScore) {
+            const students = getCurrentStudents();
+            const student = students.find(s => s.id === studentId);
+            if (student) {
+                student.score = parseInt(newScore, 10) || 0;
+                saveClassData();
+                updateStudents();
+                updateGroups();
+                updateFilters();
+            }
+        }
+
+        // 删除学生
+        function deleteStudent(studentId) {
+            const students = getCurrentStudents();
+            const index = students.findIndex(s => s.id === studentId);
+            if (index !== -1) {
+                students.splice(index, 1);
+                saveClassData();
+                alert('学生已移除');
+                updateStudents();
+                updateGroups();
+                updateFilters();
+            }
+        }
+
+        // 删除小组
+        function deleteGroup(groupId) {
+            const students = getCurrentStudents();
+            classData[currentClass].students = students.filter(student => student.group !== groupId);
+            saveClassData();
+            alert('小组已移除');
+            updateStudents();
+            updateGroups();
+            updateFilters();
+        }
+
+        // 显示个人排行榜
+        function showPersonalRanking() {
+            const rankingTable = document.getElementById('rankingTable');
+            const tbody = rankingTable.querySelector('tbody');
+            const sortedStudents = [...getCurrentStudents()].sort((a, b) => (b.score || 0) - (a.score || 0));
+
+            tbody.innerHTML = sortedStudents.map((student, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${student.name}</td>
+                    <td>${student.score || 0}</td>
+                </tr>
+            `).join('');
+        }
+
+        // 显示小组排行榜
+        function showGroupRanking() {
+            const rankingTable = document.getElementById('rankingTable');
+            const tbody = rankingTable.querySelector('tbody');
+            const sortedGroups = [...getCurrentGroups()].sort((a, b) => b.totalScore - a.totalScore);
+
+            tbody.innerHTML = sortedGroups.map((group, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${group.name}</td>
+                    <td>${group.totalScore}</td>
+                </tr>
+            `).join('');
+        }
+
+        // 导出排行榜为CSV
+        function exportRanking() {
+            const rankingTable = document.getElementById('rankingTable');
+            const rows = Array.from(rankingTable.querySelectorAll('tr'));
+            const csvContent = rows.map(row => {
+                const cols = Array.from(row.querySelectorAll('th, td'));
+                return cols.map(col => col.textContent).join(',');
+            }).join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', '排行榜.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // 保存班级数据到 localStorage
+        function saveClassData() {
+            localStorage.setItem('classData', JSON.stringify(classData, null, 2));
+        }
+
+        // 全选功能
+        function handleSelectAll() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const studentItems = document.querySelectorAll('.student-item input[type="checkbox"]');
+
+            studentItems.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        }
+
+        // 批量删除功能
+        function batchDelete() {
+            const selectedCheckboxes = document.querySelectorAll('.student-item input[type="checkbox"]:checked');
+            const selectedIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.dataset.studentId);
+
+            if (selectedIds.length === 0) {
+                alert('请选择要删除的学生');
+                return;
+            }
+
+            const confirmation = confirm(`确认删除 ${selectedIds.length} 位学生？`);
+            if (confirmation) {
+                const students = getCurrentStudents();
+                classData[currentClass].students = students.filter(student => !selectedIds.includes(student.id));
+                saveClassData();
+                alert('学生已批量删除');
+                updateStudents();
+                updateGroups();
+                updateFilters();
+            }
+        }
+
+        // 初始化页面
+        init();
+    </script>
+</body>
+</html>
